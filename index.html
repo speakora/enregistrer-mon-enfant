@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Speakora - Version 3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #343432;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(170, 197, 39, 0.3) 0%, transparent 70%);
+            top: -250px;
+            right: -250px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(170, 197, 39, 0.2) 0%, transparent 70%);
+            bottom: -200px;
+            left: -200px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(20px) translateX(20px); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 100%;
+            padding: 50px 45px;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px auto;
+            max-height: none;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo-container img {
+            max-width: 220px;
+            height: auto;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #343432;
+            text-align: center;
+            margin-bottom: 12px;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            background: rgba(170, 197, 39, 0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0 35px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #aac527 0%, #8da91f 100%);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-title {
+            font-size: 22px;
+            color: #343432;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #343432;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .required {
+            color: #ff6b6b;
+            margin-left: 3px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="date"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            background: white;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #aac527;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(170, 197, 39, 0.3);
+        }
+
+        input.error {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .checkbox-section {
+            margin-bottom: 25px;
+        }
+
+        .checkbox-section-title {
+            font-size: 15px;
+            color: #343432;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(170, 197, 39, 0.05);
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+            margin-top: 2px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #aac527;
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        button {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-previous {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-previous:hover:not(:disabled) {
+            background: #d0d0d0;
+            transform: translateY(-2px);
+        }
+
+        .btn-next, .btn-submit {
+            background: linear-gradient(135deg, #aac527 0%, #8da91f 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-next::before, .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-next:hover::before, .btn-submit:hover::before {
+            left: 100%;
+        }
+
+        .btn-next:hover, .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(170, 197, 39, 0.4);
+        }
+
+        .btn-previous:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-indicator {
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, #aac527 0%, #8da91f 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 25px;
+            font-weight: 600;
+            font-size: 15px;
+            animation: bounceIn 0.6s ease-out;
+            box-shadow: 0 10px 25px rgba(170, 197, 39, 0.4);
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-banner {
+            display: none;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .error-banner.show {
+            display: block;
+        }
+
+        .company-field {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+            color: #666;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(52, 52, 50, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(170, 197, 39, 0.3);
+            border-top-color: #aac527;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .company-display {
+            background: linear-gradient(135deg, rgba(170, 197, 39, 0.1) 0%, rgba(141, 169, 31, 0.1) 100%);
+            border: 2px solid #aac527;
+            border-radius: 12px;
+            padding: 15px 18px;
+            margin-bottom: 25px;
+        }
+
+        .company-display-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .company-display-name {
+            font-size: 18px;
+            color: #343432;
+            font-weight: 700;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 30px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .logo-container img {
+                max-width: 180px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Chargement...</div>
+    </div>
+
+    <div class="container">
+        <div class="logo-container">
+            <img src="LogoWithName.svg" alt="Speakora Logo">
+        </div>
+
+        <h1>Inscription</h1>
+        <p class="subtitle">Formulaire d'inscription en 4 étapes</p>
+
+        <div class="error-banner" id="errorBanner"></div>
+
+        <div class="company-display" id="companyDisplay" style="display: none;">
+            <div class="company-display-label">CPE / Garderie</div>
+            <div class="company-display-name" id="companyName"></div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <form id="inscriptionForm">
+            <!-- Page 1: Child Information -->
+            <div class="page active" data-page="1">
+                <h2 class="page-title">Information sur l'enfant</h2>
+                <p class="page-subtitle">Veuillez remplir les informations de l'enfant</p>
+
+                <div class="form-group">
+                    <label for="childFirstName">Prénom de l'enfant<span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="childFirstName" name="childFirstName" required>
+                        <div class="error-message" id="childFirstNameError">Ce champ est requis</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="childLastName">Nom de l'enfant<span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="childLastName" name="childLastName" required>
+                        <div class="error-message" id="childLastNameError">Ce champ est requis</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthDate">Date de naissance<span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="date" id="birthDate" name="birthDate" required>
+                        <div class="error-message" id="birthDateError">Ce champ est requis</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="groupName">Nom du groupe<span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="groupName" name="groupName" required>
+                        <div class="error-message" id="groupNameError">Ce champ est requis</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="educatorName">Nom de l'éducatrice<span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="educatorName" name="educatorName" required>
+                        <div class="error-message" id="educatorNameError">Ce champ est requis</div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="btn-previous" disabled>Précédent</button>
+                    <button type="button" class="btn-next" onclick="nextPage()">Suivant</button>
+                </div>
+                <div class="page-indicator">Page 1 sur 4</div>
+            </div>
+
+            <!-- Page 2: Parent #1 Information -->
+            <div class="page" data-page="2">
+                <h2 class="page-title">Parent #1</h2>
+                <p class="page-subtitle">Informations du premier parent/tuteur</p>
+
+                <div class="form-group">
+                    <label for="parent1FirstName">Prénom<span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="parent1FirstName" name="parent1FirstName" required>
+                        <div class="error-message" id="parent1FirstNameError">Ce champ est requis</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="parent1LastName">Nom<span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="parent1LastName" name="parent1LastName" required>
+                        <div class="error-message" id="parent1LastNameError">Ce champ est requis</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="parent1Email">Courriel<span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="email" id="parent1Email" name="parent1Email" required>
+                        <div class="error-message" id="parent1EmailError">Veuillez entrer un courriel valide</div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="btn-previous" onclick="previousPage()">Précédent</button>
+                    <button type="button" class="btn-next" onclick="nextPage()">Suivant</button>
+                </div>
+                <div class="page-indicator">Page 2 sur 4</div>
+            </div>
+
+            <!-- Page 3: Parent #2 Information -->
+            <div class="page" data-page="3">
+                <h2 class="page-title">Parent #2</h2>
+                <p class="page-subtitle">Informations du deuxième parent/tuteur (optionnel)</p>
+
+                <div class="form-group">
+                    <label for="parent2FirstName">Prénom</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="parent2FirstName" name="parent2FirstName">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="parent2LastName">Nom</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="parent2LastName" name="parent2LastName">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="parent2Email">Courriel</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="parent2Email" name="parent2Email">
+                        <div class="error-message" id="parent2EmailError">Veuillez entrer un courriel valide</div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="btn-previous" onclick="previousPage()">Précédent</button>
+                    <button type="button" class="btn-next" onclick="nextPage()">Suivant</button>
+                </div>
+                <div class="page-indicator">Page 3 sur 4</div>
+            </div>
+
+            <!-- Page 4: Preferences -->
+            <div class="page" data-page="4">
+                <h2 class="page-title">Préférences de communication</h2>
+                <p class="page-subtitle">Veuillez sélectionner vos préférences</p>
+
+                <div class="checkbox-section">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="emailComm" name="communication" value="email">
+                        <label class="checkbox-label" for="emailComm">Je souhaite recevoir les communications par courriel</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="smsComm" name="communication" value="sms">
+                        <label class="checkbox-label" for="smsComm">Je souhaite recevoir les communications par SMS</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="newsletter" name="communication" value="newsletter">
+                        <label class="checkbox-label" for="newsletter">Je souhaite recevoir le rapport périodique bi-annuel</label>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="btn-previous" onclick="previousPage()">Précédent</button>
+                    <button type="submit" class="btn-submit">Soumettre</button>
+                </div>
+                <div class="page-indicator">Page 4 sur 4</div>
+            </div>
+        </form>
+
+        <div class="success-message" id="successMessage">
+            Inscription confirmée ! Bienvenue dans la famille Speakora.
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // API Configuration
+        // =====================================================
+        // Production: https://mike.cogniwaves.com:3000
+        // Development: http://localhost:3001
+        const API_URL = 'https://mike.cogniwaves.com:3000';
+
+        // =====================================================
+        // State Variables
+        // =====================================================
+        let currentPage = 1;
+        const totalPages = 4;
+        let companyUUID = null;
+        let companyName = null;
+
+        // =====================================================
+        // Utility Functions
+        // =====================================================
+
+        // Show loading overlay
+        function showLoading(message = 'Chargement...') {
+            document.getElementById('loadingText').textContent = message;
+            document.getElementById('loadingOverlay').classList.add('show');
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('show');
+        }
+
+        // Show error banner
+        function showError(message) {
+            const banner = document.getElementById('errorBanner');
+            banner.textContent = message;
+            banner.classList.add('show');
+        }
+
+        // Hide error banner
+        function hideError() {
+            document.getElementById('errorBanner').classList.remove('show');
+        }
+
+        // Get company UUID from URL parameter
+        function getCompanyFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('company');
+        }
+
+        // =====================================================
+        // Company Lookup
+        // =====================================================
+
+        async function loadCompanyInfo() {
+            companyUUID = getCompanyFromURL();
+
+            if (!companyUUID) {
+                showError("Lien d'inscription invalide. Veuillez scanner le code QR à nouveau.");
+                document.getElementById('inscriptionForm').style.display = 'none';
+                document.querySelector('.progress-bar').style.display = 'none';
+                return false;
+            }
+
+            showLoading('Vérification du lien...');
+
+            try {
+                const response = await fetch(`${API_URL}/cpe/company/${companyUUID}`);
+                const data = await response.json();
+
+                hideLoading();
+
+                if (!response.ok || !data.success) {
+                    showError("Entreprise non trouvée. Veuillez vérifier votre lien d'inscription.");
+                    document.getElementById('inscriptionForm').style.display = 'none';
+                    document.querySelector('.progress-bar').style.display = 'none';
+                    return false;
+                }
+
+                // Store company name for form submission
+                companyName = data.company.name;
+
+                // Display company name
+                document.getElementById('companyName').textContent = companyName;
+                document.getElementById('companyDisplay').style.display = 'block';
+
+                return true;
+            } catch (error) {
+                hideLoading();
+                console.error('Error loading company info:', error);
+                showError("Erreur de connexion. Veuillez réessayer plus tard.");
+                document.getElementById('inscriptionForm').style.display = 'none';
+                document.querySelector('.progress-bar').style.display = 'none';
+                return false;
+            }
+        }
+
+        // =====================================================
+        // Form Submission
+        // =====================================================
+
+        async function submitFormToBackend(formData) {
+            showLoading('Envoi de votre inscription...');
+            hideError();
+
+            const payload = {
+                company: companyName,
+                parent_email: formData.parent1.email,
+                kid_first_name: formData.child.firstName,
+                kid_last_name: formData.child.lastName,
+                date_of_birth: formData.child.birthDate,
+                group_name: formData.child.groupName,
+                educator_name: formData.child.educatorName,
+                parent1_first_name: formData.parent1.firstName,
+                parent1_last_name: formData.parent1.lastName,
+                ...(formData.parent2.firstName && { parent2_first_name: formData.parent2.firstName }),
+                ...(formData.parent2.lastName && { parent2_last_name: formData.parent2.lastName })
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/cpe/kidPendingRegistration`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                hideLoading();
+
+                if (!response.ok || !data.success) {
+                    showError(data.message || "Une erreur s'est produite. Veuillez réessayer.");
+                    return false;
+                }
+
+                return true;
+            } catch (error) {
+                hideLoading();
+                console.error('Error submitting form:', error);
+                showError("Erreur de connexion. Veuillez réessayer.");
+                return false;
+            }
+        }
+
+        // =====================================================
+        // Page Navigation
+        // =====================================================
+
+        // Set max date to today
+        const birthDateInput = document.getElementById('birthDate');
+        const today = new Date().toISOString().split('T')[0];
+        birthDateInput.setAttribute('max', today);
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = (currentPage / totalPages) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Show specific page
+        function showPage(pageNumber) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+
+            const targetPage = document.querySelector(`[data-page="${pageNumber}"]`);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                currentPage = pageNumber;
+                updateProgress();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // Validate current page
+        function validatePage(pageNumber) {
+            const page = document.querySelector(`[data-page="${pageNumber}"]`);
+            const inputs = page.querySelectorAll('input[required]');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                const errorElement = document.getElementById(input.id + 'Error');
+
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    if (errorElement) errorElement.style.display = 'block';
+                    isValid = false;
+                } else {
+                    // Special validation for email
+                    if (input.type === 'email' && !isValidEmail(input.value)) {
+                        input.classList.add('error');
+                        if (errorElement) {
+                            errorElement.textContent = 'Veuillez entrer un courriel valide';
+                            errorElement.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else {
+                        input.classList.remove('error');
+                        if (errorElement) errorElement.style.display = 'none';
+                    }
+                }
+            });
+
+            // Validate optional email fields on page 3
+            if (pageNumber === 3) {
+                const parent2Email = document.getElementById('parent2Email');
+                const errorElement = document.getElementById('parent2EmailError');
+                if (parent2Email.value && !isValidEmail(parent2Email.value)) {
+                    parent2Email.classList.add('error');
+                    if (errorElement) errorElement.style.display = 'block';
+                    isValid = false;
+                } else {
+                    parent2Email.classList.remove('error');
+                    if (errorElement) errorElement.style.display = 'none';
+                }
+            }
+
+            return isValid;
+        }
+
+        // Email validation
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        // Next page
+        function nextPage() {
+            if (validatePage(currentPage)) {
+                if (currentPage < totalPages) {
+                    showPage(currentPage + 1);
+                }
+            }
+        }
+
+        // Previous page
+        function previousPage() {
+            if (currentPage > 1) {
+                showPage(currentPage - 1);
+            }
+        }
+
+        // Clear error on input
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('error');
+                const errorElement = document.getElementById(this.id + 'Error');
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                }
+            });
+        });
+
+        // =====================================================
+        // Form Submission Handler
+        // =====================================================
+
+        document.getElementById('inscriptionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (validatePage(currentPage)) {
+                // Collect form data
+                const formData = {
+                    child: {
+                        firstName: document.getElementById('childFirstName').value.trim(),
+                        lastName: document.getElementById('childLastName').value.trim(),
+                        birthDate: document.getElementById('birthDate').value,
+                        groupName: document.getElementById('groupName').value.trim(),
+                        educatorName: document.getElementById('educatorName').value.trim()
+                    },
+                    parent1: {
+                        firstName: document.getElementById('parent1FirstName').value.trim(),
+                        lastName: document.getElementById('parent1LastName').value.trim(),
+                        email: document.getElementById('parent1Email').value.trim()
+                    },
+                    parent2: {
+                        firstName: document.getElementById('parent2FirstName').value.trim(),
+                        lastName: document.getElementById('parent2LastName').value.trim(),
+                        email: document.getElementById('parent2Email').value.trim()
+                    },
+                    communication: []
+                };
+
+                // Collect checkbox values
+                document.querySelectorAll('input[name="communication"]:checked').forEach(cb => {
+                    formData.communication.push(cb.value);
+                });
+
+                // Submit to backend
+                const success = await submitFormToBackend(formData);
+
+                if (success) {
+                    // Hide form and show success message
+                    document.getElementById('inscriptionForm').style.display = 'none';
+                    document.querySelector('.progress-bar').style.display = 'none';
+                    document.getElementById('companyDisplay').style.display = 'none';
+
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.classList.add('show');
+                }
+            }
+        });
+
+        // =====================================================
+        // Initialize
+        // =====================================================
+
+        // Load company info on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadCompanyInfo();
+            updateProgress();
+        });
+    </script>
+</body>
+</html>
