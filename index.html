@@ -524,22 +524,6 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="groupName">Nom du groupe<span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <input type="text" id="groupName" name="groupName" required>
-                        <div class="error-message" id="groupNameError">Ce champ est requis</div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="educatorName">Nom de l'éducatrice<span class="required">*</span></label>
-                    <div class="input-wrapper">
-                        <input type="text" id="educatorName" name="educatorName" required>
-                        <div class="error-message" id="educatorNameError">Ce champ est requis</div>
-                    </div>
-                </div>
-
                 <div class="buttons">
                     <button type="button" class="btn-previous" disabled>Précédent</button>
                     <button type="button" class="btn-next" onclick="nextPage()">Suivant</button>
@@ -760,8 +744,6 @@
                 kid_first_name: formData.child.firstName,
                 kid_last_name: formData.child.lastName,
                 date_of_birth: formData.child.birthDate,
-                group_name: formData.child.groupName,
-                educator_name: formData.child.educatorName,
                 parent1_first_name: formData.parent1.firstName,
                 parent1_last_name: formData.parent1.lastName,
                 ...(formData.parent2.firstName && { parent2_first_name: formData.parent2.firstName }),
@@ -918,9 +900,7 @@
                     child: {
                         firstName: document.getElementById('childFirstName').value.trim(),
                         lastName: document.getElementById('childLastName').value.trim(),
-                        birthDate: document.getElementById('birthDate').value,
-                        groupName: document.getElementById('groupName').value.trim(),
-                        educatorName: document.getElementById('educatorName').value.trim()
+                        birthDate: document.getElementById('birthDate').value
                     },
                     parent1: {
                         firstName: document.getElementById('parent1FirstName').value.trim(),
