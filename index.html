@@ -481,7 +481,7 @@
         </div>
 
         <h1>Inscription</h1>
-        <p class="subtitle">Formulaire d'inscription en 4 étapes</p>
+        <p class="subtitle">Formulaire d'inscription en 3 étapes</p>
 
         <div class="error-banner" id="errorBanner"></div>
 
@@ -528,7 +528,7 @@
                     <button type="button" class="btn-previous" disabled>Précédent</button>
                     <button type="button" class="btn-next" onclick="nextPage()">Suivant</button>
                 </div>
-                <div class="page-indicator">Page 1 sur 4</div>
+                <div class="page-indicator">Page 1 sur 3</div>
             </div>
 
             <!-- Page 2: Parent #1 Information -->
@@ -564,7 +564,7 @@
                     <button type="button" class="btn-previous" onclick="previousPage()">Précédent</button>
                     <button type="button" class="btn-next" onclick="nextPage()">Suivant</button>
                 </div>
-                <div class="page-indicator">Page 2 sur 4</div>
+                <div class="page-indicator">Page 2 sur 3</div>
             </div>
 
             <!-- Page 3: Parent #2 Information -->
@@ -596,36 +596,9 @@
 
                 <div class="buttons">
                     <button type="button" class="btn-previous" onclick="previousPage()">Précédent</button>
-                    <button type="button" class="btn-next" onclick="nextPage()">Suivant</button>
-                </div>
-                <div class="page-indicator">Page 3 sur 4</div>
-            </div>
-
-            <!-- Page 4: Preferences -->
-            <div class="page" data-page="4">
-                <h2 class="page-title">Préférences de communication</h2>
-                <p class="page-subtitle">Veuillez sélectionner vos préférences</p>
-
-                <div class="checkbox-section">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="emailComm" name="communication" value="email">
-                        <label class="checkbox-label" for="emailComm">Je souhaite recevoir les communications par courriel</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="smsComm" name="communication" value="sms">
-                        <label class="checkbox-label" for="smsComm">Je souhaite recevoir les communications par SMS</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="newsletter" name="communication" value="newsletter">
-                        <label class="checkbox-label" for="newsletter">Je souhaite recevoir le rapport périodique bi-annuel</label>
-                    </div>
-                </div>
-
-                <div class="buttons">
-                    <button type="button" class="btn-previous" onclick="previousPage()">Précédent</button>
                     <button type="submit" class="btn-submit">Soumettre</button>
                 </div>
-                <div class="page-indicator">Page 4 sur 4</div>
+                <div class="page-indicator">Page 3 sur 3</div>
             </div>
         </form>
 
@@ -646,7 +619,7 @@
         // State Variables
         // =====================================================
         let currentPage = 1;
-        const totalPages = 4;
+        const totalPages = 3;
         let companyUUID = null;
         let companyName = null;
 
@@ -911,14 +884,8 @@
                         firstName: document.getElementById('parent2FirstName').value.trim(),
                         lastName: document.getElementById('parent2LastName').value.trim(),
                         email: document.getElementById('parent2Email').value.trim()
-                    },
-                    communication: []
+                    }
                 };
-
-                // Collect checkbox values
-                document.querySelectorAll('input[name="communication"]:checked').forEach(cb => {
-                    formData.communication.push(cb.value);
-                });
 
                 // Submit to backend
                 const success = await submitFormToBackend(formData);
