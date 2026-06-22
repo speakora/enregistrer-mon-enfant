@@ -254,6 +254,35 @@
             font-weight: 500;
         }
 
+        .consent-notice {
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #444;
+            background: rgba(170, 197, 39, 0.06);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .consent-notice summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #343432;
+        }
+
+        .consent-notice-body {
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .consent-notice-body ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .consent-notice-body a {
+            color: #6b8e00;
+        }
+
         .buttons {
             display: flex;
             justify-content: space-between;
@@ -594,6 +623,36 @@
                     </div>
                 </div>
 
+                <!-- Consentement parental (Loi 25) — case obligatoire, non cochée par défaut -->
+                <div class="checkbox-section">
+                    <div class="checkbox-section-title">Consentement</div>
+
+                    <details class="consent-notice">
+                        <summary>Lire les fins du traitement</summary>
+                        <div class="consent-notice-body">
+                            <p><strong>Consentement au traitement des renseignements de votre enfant</strong></p>
+                            <p><span class="consent-company">Le service de garde</span> utilise l'application SPEAKORA pour documenter le développement de votre enfant. Avec votre consentement, le personnel éducatif pourra :</p>
+                            <ul>
+                                <li><strong>enregistrer des notes vocales</strong> d'observation concernant votre enfant et les faire transcrire automatiquement en texte ;</li>
+                                <li><strong>consigner des observations</strong> sur le développement de votre enfant (langage, motricité, comportement, etc.) ;</li>
+                                <li><strong>générer des rapports périodiques</strong> résumant ces observations, qui vous seront transmis par courriel à l'adresse que vous fournissez.</li>
+                            </ul>
+                            <p><strong>Renseignements visés :</strong> prénom et nom de votre enfant, date de naissance, groupe, enregistrements vocaux, observations sur son développement, rapports générés, ainsi que votre nom et votre adresse courriel comme parent ou tuteur.</p>
+                            <p><strong>Traitement à l'extérieur du Québec :</strong> pour fournir ces fonctions (transcription, synthèse, hébergement, envoi des rapports), certains renseignements sont traités par des fournisseurs situés <strong>aux États-Unis</strong> (notamment pour la transcription vocale et la production des rapports) et au Canada. Speakora évalue la protection accordée à ces renseignements conformément à l'article 17 de la <em>Loi 25</em>. Les détails figurent dans la <a href="https://speakora.ca/politique-de-confidentialite/" target="_blank" rel="noopener">politique de confidentialité</a>.</p>
+                            <p><strong>Vos choix :</strong> votre consentement est libre. Vous pouvez le <strong>retirer en tout temps</strong> en écrivant à <span class="consent-company">le service de garde</span> ou à <a href="mailto:philippe@speakora.ca">philippe@speakora.ca</a> ; le retrait n'affecte pas les traitements déjà effectués et peut limiter la capacité du service de garde à documenter le développement de votre enfant au moyen de SPEAKORA. Vous disposez aussi des droits d'accès, de rectification et de suppression décrits dans la politique de confidentialité.</p>
+                            <p>En cochant la case, vous attestez être le parent ou le tuteur de l'enfant et consentir aux traitements ci-dessus.</p>
+                        </div>
+                    </details>
+
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="consentCheckbox" name="consentCheckbox">
+                        <label class="checkbox-label" for="consentCheckbox">
+                            <strong>Je consens</strong> à ce que <span class="consent-company">le service de garde</span> recueille et traite les renseignements concernant mon enfant au moyen de l'application SPEAKORA — y compris les enregistrements vocaux, les observations sur son développement et les rapports générés — aux fins décrites ci-dessus. J'ai lu et je comprends ces fins.
+                        </label>
+                    </div>
+                    <div class="error-message" id="consentCheckboxError">Vous devez consentir pour inscrire votre enfant.</div>
+                </div>
+
                 <div class="buttons">
                     <button type="button" class="btn-previous" onclick="previousPage()">Précédent</button>
                     <button type="submit" class="btn-submit">Soumettre</button>
@@ -692,6 +751,11 @@
                 document.getElementById('companyName').textContent = companyName;
                 document.getElementById('companyDisplay').style.display = 'block';
 
+                // Name the daycare in the consent wording
+                document.querySelectorAll('.consent-company').forEach(function (el) {
+                    el.textContent = companyName;
+                });
+
                 return true;
             } catch (error) {
                 hideLoading();
@@ -720,7 +784,8 @@
                 parent1_first_name: formData.parent1.firstName,
                 parent1_last_name: formData.parent1.lastName,
                 ...(formData.parent2.firstName && { parent2_first_name: formData.parent2.firstName }),
-                ...(formData.parent2.lastName && { parent2_last_name: formData.parent2.lastName })
+                ...(formData.parent2.lastName && { parent2_last_name: formData.parent2.lastName }),
+                consent_given: formData.consentGiven === true
             };
 
             try {
@@ -822,6 +887,16 @@
                     parent2Email.classList.remove('error');
                     if (errorElement) errorElement.style.display = 'none';
                 }
+
+                // Parental consent is mandatory (Loi 25)
+                const consentCheckbox = document.getElementById('consentCheckbox');
+                const consentError = document.getElementById('consentCheckboxError');
+                if (!consentCheckbox.checked) {
+                    if (consentError) consentError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    if (consentError) consentError.style.display = 'none';
+                }
             }
 
             return isValid;
@@ -884,7 +959,8 @@
                         firstName: document.getElementById('parent2FirstName').value.trim(),
                         lastName: document.getElementById('parent2LastName').value.trim(),
                         email: document.getElementById('parent2Email').value.trim()
-                    }
+                    },
+                    consentGiven: document.getElementById('consentCheckbox').checked
                 };
 
                 // Submit to backend
