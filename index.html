@@ -211,6 +211,14 @@
             font-weight: 600;
         }
 
+        /* Muted helper line under an input (e.g. "Date d'entrée à la garderie"). */
+        .field-hint {
+            font-size: 12px;
+            color: #8a8a85;
+            margin: 6px 0 0;
+            line-height: 1.4;
+        }
+
         .checkbox-section {
             margin-bottom: 25px;
         }
@@ -553,6 +561,15 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="attendedSince">Fréquente depuis<span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="date" id="attendedSince" name="attendedSince" required>
+                        <div class="error-message" id="attendedSinceError">Ce champ est requis</div>
+                    </div>
+                    <p class="field-hint">Date d'entrée à la garderie</p>
+                </div>
+
                 <div class="buttons">
                     <button type="button" class="btn-previous" disabled>Précédent</button>
                     <button type="button" class="btn-next" onclick="nextPage()">Suivant</button>
@@ -781,6 +798,7 @@
                 kid_first_name: formData.child.firstName,
                 kid_last_name: formData.child.lastName,
                 date_of_birth: formData.child.birthDate,
+                attended_since: formData.child.attendedSince,
                 parent1_first_name: formData.parent1.firstName,
                 parent1_last_name: formData.parent1.lastName,
                 ...(formData.parent2.firstName && { parent2_first_name: formData.parent2.firstName }),
@@ -821,8 +839,31 @@
 
         // Set max date to today
         const birthDateInput = document.getElementById('birthDate');
+        const attendedSinceInput = document.getElementById('attendedSince');
         const today = new Date().toISOString().split('T')[0];
         birthDateInput.setAttribute('max', today);
+        attendedSinceInput.setAttribute('max', today);
+
+        // "Fréquente depuis" can never precede the date of birth. Keep the
+        // lower bound of the entry-date picker in sync with the birth date so
+        // the native picker greys out impossible days on mobile.
+        function syncAttendedSinceBounds() {
+            const birth = birthDateInput.value;
+            if (birth) {
+                attendedSinceInput.setAttribute('min', birth);
+                // Clear a now-invalid value so the error is obvious immediately.
+                if (attendedSinceInput.value && attendedSinceInput.value < birth) {
+                    attendedSinceInput.value = '';
+                }
+            } else {
+                attendedSinceInput.removeAttribute('min');
+            }
+        }
+
+        birthDateInput.addEventListener('change', syncAttendedSinceBounds);
+        birthDateInput.addEventListener('input', syncAttendedSinceBounds);
+        // Apply once on load in case the browser restored a previous value.
+        syncAttendedSinceBounds();
 
         // Update progress bar
         function updateProgress() {
@@ -846,9 +887,18 @@
             }
         }
 
+        // A date input's value is YYYY-MM-DD, which compares correctly as a
+        // string. Missing bounds are treated as unbounded.
+        function isDateOutOfRange(input) {
+            const value = input.value;
+            if (!value) return false;
+            if (input.min && value < input.min) return true;
+            if (input.max && value > input.max) return true;
+            return false;
+        }
+
         // Validate current page
-        function validatePage(pageNumber) {
-            const page = document.querySelector(`[data-page="${pageNumber}"]`);
+        function validatePage(pageNumber) {            const page = document.querySelector(`[data-page="${pageNumber}"]`);
             const inputs = page.querySelectorAll('input[required]');
             let isValid = true;
 
@@ -857,21 +907,33 @@
 
                 if (!input.value.trim()) {
                     input.classList.add('error');
-                    if (errorElement) errorElement.style.display = 'block';
+                    if (errorElement) {
+                        errorElement.textContent = 'Ce champ est requis';
+                        errorElement.style.display = 'block';
+                    }
+                    isValid = false;
+                } else if (input.type === 'date' && isDateOutOfRange(input)) {
+                    // Native min/max are advisory: some mobile keypads let the
+                    // user type a date outside the range. Enforce it ourselves.
+                    input.classList.add('error');
+                    if (errorElement) {
+                        errorElement.textContent =
+                            input.id === 'attendedSince'
+                                ? 'La date d\'entrée doit être entre la date de naissance et aujourd\'hui'
+                                : 'La date ne peut pas être dans le futur';
+                        errorElement.style.display = 'block';
+                    }
+                    isValid = false;
+                } else if (input.type === 'email' && !isValidEmail(input.value)) {
+                    input.classList.add('error');
+                    if (errorElement) {
+                        errorElement.textContent = 'Veuillez entrer un courriel valide';
+                        errorElement.style.display = 'block';
+                    }
                     isValid = false;
                 } else {
-                    // Special validation for email
-                    if (input.type === 'email' && !isValidEmail(input.value)) {
-                        input.classList.add('error');
-                        if (errorElement) {
-                            errorElement.textContent = 'Veuillez entrer un courriel valide';
-                            errorElement.style.display = 'block';
-                        }
-                        isValid = false;
-                    } else {
-                        input.classList.remove('error');
-                        if (errorElement) errorElement.style.display = 'none';
-                    }
+                    input.classList.remove('error');
+                    if (errorElement) errorElement.style.display = 'none';
                 }
             });
 
@@ -948,7 +1010,8 @@
                     child: {
                         firstName: document.getElementById('childFirstName').value.trim(),
                         lastName: document.getElementById('childLastName').value.trim(),
-                        birthDate: document.getElementById('birthDate').value
+                        birthDate: document.getElementById('birthDate').value,
+                        attendedSince: document.getElementById('attendedSince').value
                     },
                     parent1: {
                         firstName: document.getElementById('parent1FirstName').value.trim(),
